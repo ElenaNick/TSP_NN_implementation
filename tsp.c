@@ -24,11 +24,11 @@ struct City{
 };
 
 int read_cities(FILE* input, struct City** set, int capacity);
-int find_closest(struct City* set, struct City* current, int numOfCities);
+int find_closest(struct City* set, struct City* current, int numOfCities, int** storage, int idndex);
 
 int main(int argc, char* argv[]){
 	int numOfCities = 0;
-	int i, j, closest;
+	int i, j, closest, current_index;
 	long int distance = 0;
 	long int min_distance = INT_MAX;
 	int *path, *min_path;
@@ -51,6 +51,15 @@ int main(int argc, char* argv[]){
 
 	numOfCities = read_cities(input, &citySet, 1024);
 
+
+	// create storage for DP
+	int **storage = malloc(numOfCities*sizeof(int*));
+	for(i = 0; i < numOfCities; i++)
+			storage[i] = malloc(numOfCities*sizeof(int));
+
+	for(i = 0; i < numOfCities; i++)
+		for(j = 0; j< numOfCities; j++)
+			storage[i][j] = INT_MAX;
 /****
  * Nearest Neighbour Algorithm
  * ***/
@@ -67,19 +76,21 @@ int main(int argc, char* argv[]){
 		current = &citySet[j];
 		path[0] = j;
 		current->visited = 1;
+		current_index = j;
 
 		//for each city in the set
 		for(i = 1; i < numOfCities; i++){
 			//find the index of the closest city
-			closest = find_closest(citySet, current, numOfCities);
+			closest = find_closest(citySet, current, numOfCities, storage, current_index);
 			//mark the city as visited
 			citySet[closest].visited = 1;
 			//add distance from current to closest to the path distance
-			distance = distance + lrint(sqrt(pow((current->x - citySet[closest].x),2) + pow((current->y - citySet[closest].y),2)));
+			distance = distance + storage[current_index][closest];
 			//set current to the closest city
 			current = &citySet[closest];
 			//ad add it to the path
 			path[i] = closest;
+			current_index = closest;
 		}
 		//add the last edge to the distance
 		distance = distance + lrint(sqrt(pow((citySet[path[numOfCities - 1]].x - citySet[j].x),2) + pow((citySet[path[numOfCities-1]].y - citySet[j].y),2)));
@@ -130,6 +141,10 @@ int main(int argc, char* argv[]){
 	free(path);
 	free(min_path);
 	free(newName);
+	for(i = 0; i < numOfCities; i++)
+		free(storage[i]);
+	free(storage);
+
 	return 0;
 }
 
@@ -178,7 +193,7 @@ int read_cities(FILE* input, struct City** set, int capacity){
  *       int numOfCities - total number of the cities in the set
  *Output: index of the city which is closest to the curtrent
  *******************************************************************************/
-int find_closest(struct City* set, struct City* current, int numOfCities){
+int find_closest(struct City* set, struct City* current, int numOfCities, int** storage, int current_index){
 	int min, i;
 	min = -1;
 	long int distance = INT_MAX;
@@ -186,9 +201,10 @@ int find_closest(struct City* set, struct City* current, int numOfCities){
 	//for each unvisited city calculate the distance and compare with current minimum
 	for(i = 0; i < numOfCities; i++){
 		if(set[i].visited == 0){
-			int d_cur = lround(sqrt(pow((current->x - set[i].x), 2) + pow((current->y - set[i].y), 2)));
-			if(d_cur < distance){
-				distance = d_cur;
+			if(storage[current_index][i] == INT_MAX)
+				storage[current_index][i] = lround(sqrt(pow((current->x - set[i].x), 2) + pow((current->y - set[i].y), 2)));
+			if(storage[current_index][i] < distance){
+				distance = storage[current_index][i];
 				min = i;
 			}
 		}
