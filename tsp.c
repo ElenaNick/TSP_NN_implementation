@@ -1,13 +1,16 @@
 /******************************************************************************
  * Author: Elena Greblova
- * Class: CS 325
+ * Contributors: Alejandro Martin, Alan Macabuhay
+ * Class: CS 325 - 400
  * Assignment: Final Project
- * Due date: December 1st?, 2017
+ * Due date: December 1, 2017
  * Description: TSP problem modified algorithm implementation. Accepts a file
  *              with towns coordinates in the command line.
  *              Reads the city info into array of City structs pointers, run
  *              them through algorithm, and writes the calculated distance and
  *              path into the new file.
+ *              Uses DP elements: once the distance between 2 cities is 
+ *              calculated - it is saved in a 2d array and can be accessed later
  *****************************************************************************/
 
 #include <stdio.h>
