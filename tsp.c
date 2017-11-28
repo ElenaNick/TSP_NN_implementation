@@ -61,7 +61,7 @@ int main(int argc, char* argv[]){
 	if(numOfCities < 2700 || (argc > 2 && strcmp(argv[2], "p") == 0))
 		limit = numOfCities;
 	else
-		limit = numOfCities/8;
+		limit = numOfCities/7;
 
 
 	// create storage for DP
