@@ -18,6 +18,7 @@
 #include <string.h>
 #include <math.h>
 #include <limits.h>
+#include <time.h>
 
 struct City{
 	int identifier;
@@ -31,14 +32,15 @@ int find_closest(struct City* set, struct City* current, int numOfCities, int** 
 
 int main(int argc, char* argv[]){
 	int numOfCities = 0;
-	int i, j, closest, current_index;
+	int i, j, closest, current_index, limit;
 	long int distance = 0;
 	long int min_distance = INT_MAX;
 	int *path, *min_path;
 	FILE* input, *output;
 	struct City* current;
+	
+	clock_t begin = clock(); //start time
 
-	struct City* citySet = malloc(1024*sizeof(struct City));
 //check usage
 	if(argc < 2){
 		printf("USAGE: <executable name> <input file name>\n");
@@ -51,8 +53,15 @@ int main(int argc, char* argv[]){
 		printf("ERROR: couln't open the file %s\n", argv[1]);
 		exit(1);
 	}
-
+	
+	
+	struct City* citySet = malloc(1024*sizeof(struct City));
 	numOfCities = read_cities(input, &citySet, 1024);
+
+	if(numOfCities < 2700 || (argc > 2 && strcmp(argv[2], "p") == 0))
+		limit = numOfCities;
+	else
+		limit = numOfCities/7;
 
 
 	// create storage for DP
@@ -74,7 +83,7 @@ int main(int argc, char* argv[]){
 
 	
 	//check the path for each city in the set
-	for(j = 0; j < numOfCities; j++){
+	for(j = 0; j < limit; j++){
 		//pick up the start of the route and add it to the path
 		current = &citySet[j];
 		path[0] = j;
@@ -104,7 +113,6 @@ int main(int argc, char* argv[]){
 			min_distance = distance;
 		}
 
-		printf("%d\n", j);
 		int x;
 		for(x = 0; x < numOfCities; x++)
 			citySet[x].visited = 0;
@@ -136,7 +144,10 @@ int main(int argc, char* argv[]){
 
 
 	
-	
+	clock_t end = clock();
+	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //get time
+	printf("Time spent: %f\n", time_spent);
+
 	//clean up
 	fclose(input);
 	fclose(output);
