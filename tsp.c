@@ -1,6 +1,6 @@
 /******************************************************************************
  * Author: Elena Greblova
- * Contributors: Alejandro Martin, Alan Macabuhay
+ * Contributors: Alejandro Martin Romero, Alan Macabuhay
  * Class: CS 325 - 400
  * Assignment: Final Project
  * Due date: December 1, 2017
